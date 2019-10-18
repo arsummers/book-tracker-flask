@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-restful = "*"
-connexion = "*"
+connexion = {extras = ["swagger-ui"],version = "*"}
 
 [requires]
 python_version = "3.7"
