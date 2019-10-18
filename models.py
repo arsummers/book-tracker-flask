@@ -6,9 +6,9 @@ class Person(db.Model):
     person_id = db.Column(db.Integer, primary_key=True)
     lname = db.Column(db.String(32), index=True)
     fname = db.Column(db.String(32))
-    timestamp = db.Column(db.Datetime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class PersonSchema(ma.ModelSchema):
     class Meta:
         model = Person
-        sqla_session = db.session
+        sqla_session = db.session    
