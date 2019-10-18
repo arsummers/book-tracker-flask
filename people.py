@@ -54,34 +54,61 @@ def create(person):
             'Person with last name {lname} already exists'.format(lname=lname)
         )
 
-# def update(lname, person):
-#     """
-#     updates and existing person
-#     """
-#     if lname in PEOPLE:
-#         PEOPLE[lname]['fname'] = person.get('fname')
-#         PEOPLE[lname]['timestamp'] = get_timestamp()
+def update(person_id, person):
+    """
+    updates an existing person
+    """
+    update_person = Person.query.filter(
+        Person.person_id == person_id
+    ).one_or_none()
 
-#         return PEOPLE[lname]
+    fname = person.get('fname')
+    lname = person.get('lname')
 
-#     else:
-#         abort(
-#             404,
-#             "Person with name {lname} not found".format(lname=lname)
-#         )
+    existing_person = (
+        Person.query.filter(Person.fname == fname)
+        .filter(Person.lname == lname)
+        .one_or_none()
+    )
 
-# def delete(lname):
-#     """
-#     yeets a person from the structure
-#     """
-#     if lname in PEOPLE:
-#         del PEOPLE[lname]
-#         return make_response(
-#             "{lname} successsfully deleted".format(lname=lname), 200
-#         )
+    if update_person is None:
+        abort(
+            404,
+            "Person with name {lname} not found".format(lname=lname)
+        )
 
-#     else:
-#         abort(
-#             404,
-#             "Person with name {lname} not found".format(lname=lname)
-#         )
+    elif existing_person is not None and existing_person.person_id != person_id:
+        abort(
+            409,
+            'Person with name {fname} {lname} already exists'.format(fname=fname, lname=lname),
+        )
+    # update!
+    else:
+        schema = PersonSchema()
+        update = schema.load(person, session=db.session).data
+
+        update.person_id = update_person.person_id
+
+        db.session.merge(update)
+        db.session.commit()
+
+        data = schema.dump(update_person).data
+
+        return data, 200
+
+def delete(person_id):
+    """
+    yeets a person from the structure
+    """
+    person = Person.query.filter(Person.person_id == person_id).one_or_none()
+
+    if person is not None:
+        db.session.delete(person)
+        db.session.commit()
+        return make_response('Person {person_id} deleted').format(person_id=person_id), 200
+
+    else:
+        abort(
+            404,
+            "Person with id {person_id} not found".format(person_id=person_id),
+        )
