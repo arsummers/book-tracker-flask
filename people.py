@@ -8,9 +8,10 @@ def read_all():
     """
     people = Person.query.order_by(Person.lname).all()
 
-    # serialize data for response
+    # Serialize the data for the response
     person_schema = PersonSchema(many=True)
-    return person_schema.dump(people).data
+    data = person_schema.dump(people).data
+    return data
         
 
 def read_one(person_id):
@@ -19,13 +20,20 @@ def read_one(person_id):
     """
     person = Person.query.filter(Person.person_id == person_id).one_or_none()
 
-    # if person exists, serialize
+    # Did we find a person?
     if person is not None:
-        person_schema = PersonSchema()
-        return person_schema.dump(person).data
 
+        # Serialize the data for the response
+        person_schema = PersonSchema()
+        data = person_schema.dump(person).data
+        return data
+
+    # Otherwise, nope, didn't find that person
     else:
-        abort(404, 'Person with id {person_id} not found'.format(person_id=person_id))
+        abort(
+            404,
+            "Person not found for Id: {person_id}".format(person_id=person_id),
+        )
 
 def create(person):
     """
@@ -36,7 +44,11 @@ def create(person):
     fname = person.get('fname')
 
     # checks if person already exists
-    existing_person = Person.query.filter(Person.fname == fname).filter(Person.lname == lname).one_or_none()
+    existing_person = (
+        Person.query.filter(Person.fname == fname)
+        .filter(Person.lname == lname)
+        .one_or_none()
+    )
 
     if existing_person is None:
         
@@ -46,7 +58,9 @@ def create(person):
         db.session.add(new_person)
         db.session.commit()
 
-        return schema.dump(new_person).data, 201
+        data = schema.dump(new_person).data
+
+        return data, 201
 
     else:
         abort(
