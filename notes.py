@@ -6,7 +6,7 @@ def read_all():
     notes = Note.query.order_by(db.desc(Note.timestamp)).all()
 
     note_schema = NoteSchema(many=True, exclude=['person.notes'])
-    data = note_schema.dump(notes).data
+    data = note_schema.dump(notes)
     return data
 
 def read_one(person_id, note_id):
@@ -19,7 +19,7 @@ def read_one(person_id, note_id):
 
     if note is not None:
         note_schema = NoteSchema()
-        data = note_schema.dump(note).data
+        data = note_schema.dump(note)
         return data
 
     else:
@@ -38,7 +38,7 @@ def create(person_id, note):
     person.notes.append(new_note)
     db.session.commit()
 
-    data = schema.dump(new_note).data
+    data = schema.dump(new_note)
 
     return data, 201
 
@@ -65,7 +65,7 @@ def update(person_id, note_id, note):
         db.session.commit()
 
         # return updated note in the response
-        data = schema.dump(update_note).data
+        data = schema.dump(update_note)
 
         return data, 200
 
