@@ -1,8 +1,9 @@
 import os
+from datetime import datetime
 from config import db
-from models import Person
+from models import Person, Note
 
-# Data to initialize database with
+# Data to initialize and populate database with
 PEOPLE = [
     {
         "fname": "Doug",
@@ -47,6 +48,16 @@ db.create_all()
 # iterate over the PEOPLE structure and populate the database
 for person in PEOPLE:
     p = Person(lname=person.get("lname"), fname=person.get("fname"))
+
+    # adds the note
+    for note in person.get("notes"):
+        content, timestamp = note
+        p.notes.append(
+            Note(
+                content=content,
+                timestamp=datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S"),
+            )
+        )
     db.session.add(p)
 
 db.session.commit()
