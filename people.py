@@ -1,6 +1,6 @@
 from flask import make_response, abort
 from config import db
-from models import Person, PersonSchema
+from models import Person, Note, PersonSchema
 
 def read_all():
     """
@@ -18,7 +18,7 @@ def read_one(person_id):
     """
     searches through list of people based on name
     """
-    person = Person.query.filter(Person.person_id == person_id).one_or_none()
+    person = Person.query.filter(Person.person_id == person_id).outerjoin(Note).one_or_none()
 
     # Did we find a person?
     if person is not None:
