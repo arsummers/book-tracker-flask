@@ -6,7 +6,11 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
-# classes will go here
+class Book(Base):
+    __tablename__ = 'book'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(250), nullable=False)
+    author = Column(String(250), nullable=False)
 
 engine = create_engine('sqlite:///books-collection.db')
 
