@@ -11,7 +11,16 @@ class Book(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(250), nullable=False)
     author = Column(String(250), nullable=False)
+    # bookformat = Column(String(250), nullable=True)
 
-engine = create_engine('sqlite:///books-collection.db')
+    @property
+    def serialize(self):
+        return{
+            'title': self.title,
+            'author': self.author,
+            'id': self.id,
+        }
 
-Base.metadata.create_all(engine)
+# engine = create_engine('sqlite:///books-collection.db')
+
+# Base.metadata.create_all(engine)
